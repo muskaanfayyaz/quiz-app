@@ -1,102 +1,70 @@
-import streamlit as st
-import random
+import streamlit as st  # for the web interface
+import random  # for randomizing the questions
+import time  # for the timer
 
-# Set up Streamlit Page
-st.set_page_config(page_title="Quiz App", page_icon="📝", layout="centered")
+# Title of the Application with Styling
+st.markdown("<h1 style='text-align: center; color: #4CAF50;'>📝 Quiz Application</h1>", unsafe_allow_html=True)
+st.markdown("<hr style='border:1px solid #4CAF50;'>", unsafe_allow_html=True)
 
-st.title("📝 Quiz Application")
-
-# Question Bank
+# Define quiz questions, options, and answer in the form of a list of dictionaries
 questions = [
     {
-        "question": "What is the capital of France?",
-        "options": ["Paris", "London", "Berlin", "Madrid"],
-        "correct_answer": "Paris"
-    },
-    {
         "question": "What is the capital of Pakistan?",
-        "options": ["Karachi", "Lahore", "Islamabad", "Peshawar"],
-        "correct_answer": "Islamabad"
+        "options": ["Lahore", "Karachi", "Islamabad", "Peshawar"],
+        "answer": "Islamabad",
     },
     {
         "question": "Who is the founder of Pakistan?",
-        "options": ["Allama Iqbal", "Quaid e Azam", "Sir Syed Ahmad Khan", "Maulana Shaukat Ali"],
-        "correct_answer": "Quaid e Azam"
+        "options": [
+            "Allama Iqbal",
+            "Liaquat Ali Khan",
+            "Muhammad Ali Jinnah",
+            "Benazir Bhutto",
+        ],
+        "answer": "Muhammad Ali Jinnah",
+    },
+    {
+        "question": "Which is the national language of Pakistan?",
+        "options": ["Punjabi", "Urdu", "Sindhi", "Pashto"],
+        "answer": "Urdu",
     },
     {
         "question": "What is the currency of Pakistan?",
-        "options": ["Rupee", "Dollar", "Pound", "Euro"],
-        "correct_answer": "Rupee"
+        "options": ["Rupee", "Dollar", "Taka", "Riyal"],
+        "answer": "Rupee",
     },
     {
-        "question": "Which is the largest city of Pakistan?",
-        "options": ["Karachi", "Lahore", "Islamabad", "Peshawar"],
-        "correct_answer": "Karachi"
-    },
-    {
-        "question": "What is the national language of Pakistan?",
-        "options": ["Urdu", "English", "Punjabi", "Pashto"],
-        "correct_answer": "Urdu"
-    },
-    {
-        "question": "What is the national animal of Pakistan?",
-        "options": ["Markhor", "Lion", "Tiger", "Deer"],
-        "correct_answer": "Markhor"
-    },
-    {
-        "question": "What are the colors of the national flag of Pakistan?",
-        "options": ["Red and White", "Green and White", "Blue and White", "Yellow and White"],
-        "correct_answer": "Green and White"
-    },
-    {
-        "question": "What is the national flower of Pakistan?",
-        "options": ["Rose", "Lily", "Tulip", "Jasmine"],
-        "correct_answer": "Jasmine"
-    },
-    {
-        "question": "What is the national bird of Pakistan?",
-        "options": ["Chukar Partridge", "Peacock", "Pigeon", "Eagle"],
-        "correct_answer": "Chukar Partridge"
+        "question": "Which city is known as the City of Lights in Pakistan?",
+        "options": ["Lahore", "Islamabad", "Faisalabad", "Karachi"],
+        "answer": "Karachi",
     },
 ]
 
-# Initialize session state variables
+# Initialize a random question if none exists in the session state
 if "current_question" not in st.session_state:
     st.session_state.current_question = random.choice(questions)
-    st.session_state.score = 0
-    st.session_state.answered = False
-    st.session_state.selected_option = None  # Store selected option separately
 
-# Fetch Current Question
+# Get the current question from session state
 question = st.session_state.current_question
 
-# Display Question
-st.markdown(f"### {question['question']}")
+# Display the question with styling
+st.markdown(f"<h3 style='color: #FF9800;'>{question['question']}</h3>", unsafe_allow_html=True)
 
-# Display Options with Radio Buttons
-selected_option = st.radio(
-    "Select your answer:",
-    question["options"],
-    key="answer"
-)
+# Create radio buttons for the options
+selected_option = st.radio("**Choose your answer:**", question["options"], key="answer")
 
-# Submit Button
-if st.button("Submit"):
-    if selected_option:
-        if selected_option == question["correct_answer"]:
-            st.success("✅ Correct answer!")
-            if not st.session_state.answered:
-                st.session_state.score += 1  # Increase score only once
-        else:
-            st.error(f"❌ Incorrect! The correct answer is: **{question['correct_answer']}**")
-        st.session_state.answered = True
+# Submit button to check the answer
+if st.button("✅ Submit Answer"):
+    if selected_option == question["answer"]:
+        st.success("🎉 **Correct!** Well done!")
     else:
-        st.warning("⚠️ Please select an answer before submitting.")
+        st.error(f"❌ **Incorrect!** The correct answer is: **{question['answer']}**")
 
-# Display Score
-st.sidebar.title("📊 Scoreboard")
-st.sidebar.write(f"**Score:** {st.session_state.score}")
+    # Wait for 3 seconds before showing the next question
+    time.sleep(2)
 
+    # Select a new random question
+    st.session_state.current_question = random.choice(questions)
 
-# Rerun the app to display the next question    
-st.rerun()
+    # Rerun the app to display the next question
+    st.rerun()
